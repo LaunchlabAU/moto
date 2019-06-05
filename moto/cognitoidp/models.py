@@ -707,13 +707,18 @@ class CognitoIdpBackend(BaseBackend):
                 user_pool = p
         if user_pool is None:
             raise ResourceNotFoundError(client_id)
-
         user = CognitoIdpUser(
             user_pool_id=user_pool.id,
             username=username,
             password=password,
             attributes=attributes,
             status=UserStatus["UNCONFIRMED"]
+        )
+        # TODO: is this the right place to populate attributes?
+        # TODO: are these attributes always added? How do we determine if username
+        # is an email address?
+        user.update_attributes(
+            new_attributes={"sub": user.id, "email_verified": False, "email": username}
         )
         user_pool.users[user.username] = user
         return user
