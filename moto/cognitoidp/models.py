@@ -718,7 +718,11 @@ class CognitoIdpBackend(BaseBackend):
         # TODO: are these attributes always added? How do we determine if username
         # is an email address?
         user.update_attributes(
-            new_attributes={"sub": user.id, "email_verified": False, "email": username}
+            new_attributes=(
+                {"Name": "sub", "Value": user.id},
+                {"Name": "email_verified", "Value": False},
+                {"Name": "email", "Value": username}
+            )
         )
         user_pool.users[user.username] = user
         return user
