@@ -544,10 +544,18 @@ class CognitoIdpBackend(BaseBackend):
         if not user_pool:
             raise ResourceNotFoundError(user_pool_id)
 
+        # TODO: can we also get a user by the sub value?
         if username not in user_pool.users:
-            raise UserNotFoundError(username)
+            return self._get_user_by_sub(sub=username, user_pool=user_pool)
 
         return user_pool.users[username]
+
+    def _get_user_by_sub(self, sub, user_pool):
+        for user in user_pool.values():
+            for attr in user.attributes:
+                if attr["Name"] == "sub" and attr["Value"] == sub:
+                    return user
+        raise UserNotFoundError(sub)
 
     @paginate(60, "pagination_token", "limit")
     def list_users(self, user_pool_id, pagination_token=None, limit=None):
