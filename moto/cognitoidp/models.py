@@ -551,7 +551,7 @@ class CognitoIdpBackend(BaseBackend):
         return user_pool.users[username]
 
     def _get_user_by_sub(self, sub, user_pool):
-        for user in user_pool.values():
+        for user in user_pool.users.values():
             for attr in user.attributes:
                 if attr["Name"] == "sub" and attr["Value"] == sub:
                     return user
